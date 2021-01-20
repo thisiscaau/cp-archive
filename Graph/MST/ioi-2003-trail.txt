@@ -1,0 +1,64 @@
+/*
+MST solution to IOI 2003 - Trail Maintainance
+*/
+// do what you love love what you do
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+ll n,w;
+const ll MAXN = 3005;
+ll p[MAXN],sz[MAXN];
+struct edge{
+    ll u,v,w;
+    bool operator<(edge const& other) const {
+        return w < other.w;
+    }
+};
+ll find(ll v){
+    return p[v] = (p[v]==v) ? v : find(p[v]);
+}
+bool join(ll u,ll v){
+    u = find(u);
+    v = find(v);
+    if (u!=v){
+        if (sz[v]>sz[u]) swap(u,v);
+        p[v] = u;
+        sz[u] += sz[v];
+        return true;
+    }
+    return false;
+}
+multiset<edge> ms;
+multiset<edge>::iterator it,tmp;
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> w;
+    while (w--){
+        edge cur; ll res = 0;
+        cin >> cur.u >> cur.v >> cur.w;
+        for (int i = 1 ; i <= n ; i++){
+            p[i] = i;
+            sz[i] = 1;
+        }
+        ms.insert(cur);
+        for (it = ms.begin() ; it != ms.end() ; ){
+            ll u = (*it).u , v = (*it).v , w = (*it).w;
+            if (join(u,v)){
+                res += w;
+                it++;
+            }
+            else {
+                tmp = it; it++;
+                ms.erase(tmp);
+                // deleting edges that are not needed
+            }
+        }
+        res = (ms.size() == n - 1) ? res : -1; // check
+        cout << res << endl;
+    }
+}
