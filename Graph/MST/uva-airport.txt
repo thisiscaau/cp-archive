@@ -1,0 +1,66 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+ll t,n,m,a,tc = 0,cnt,cost;
+const ll MAXN = 1e4 + 5;
+ll p[MAXN],sz[MAXN];
+struct edge {
+    ll u,v,w;
+    bool operator < (edge const& other){
+        return w < other.w;
+    }
+};
+ll find(ll v){
+    return p[v] = (p[v]==v) ? v : find(p[v]);
+}
+bool join(ll u,ll v){
+    u = find(u);
+    v = find(v);
+    if (u!=v){
+        if (sz[v]>sz[u]) swap(u,v);
+        p[v] = u;
+        sz[u] += sz[v];
+        return true;
+    }
+    return false;
+}
+vector<edge> g;
+void solve(){
+    tc++; cost = 0; cnt = 0; p[0] = 0;
+    g.clear();
+    cin >> n >> m >> a;
+    for (int i = 1 ; i <= n ; i++){
+        p[i] = i;
+        sz[i] = 1;
+    }
+    for (int i = 1 ; i <= m ; i++){
+        edge e;
+        cin >> e.u >> e.v >> e.w;
+        if (e.w<a) g.pb(e);
+    }
+    sort(g.begin(),g.end());
+    for (auto e : g){
+        if (join(e.u,e.v)){
+            cost += e.w;
+            cnt++;
+            if (cnt==n-1){
+                break;
+            }
+        }
+    }
+    ll add = n - cnt;
+    cost += a*add;
+    cout << "Case #" << tc << ": " << cost << " " << add << endl;
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> t;
+    while (t--){
+        solve();
+    }
+}
