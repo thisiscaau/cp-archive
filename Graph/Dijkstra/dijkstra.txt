@@ -1,0 +1,42 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+vector<vii> g;
+vii dist,p;
+ll n,m,s;
+const ll inf = 1e9 + 7;
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m >> s;
+    g.assign(n,vii());
+    dist.assign(n,inf);
+    p.assign(n,-1);
+    dist[s] = 0;
+    priority_queue<ii, vector<ii>, greater<ii>> pq;
+    pq.push(mp(0,s));
+    while (!pq.empty()){
+        ll d_s = pq.top().fi , u = pq.top().se;
+        pq.pop();
+        if (d_s!=dist[u]){
+            continue;
+        }
+        for (auto edge : g[u]){
+            ll to = edge.se, len = edge.fi;
+            if (dist[u] + len < dist[to]){
+                dist[to] = dist[u] + len;
+                p[to] = v;
+                q.push(mp(dist[to],to));
+            }
+        }
+    }
+    for (int i = 1 ; i <= n ; i++){
+        cout << s << " " << i << " " << dist[i] << endl;
+    }
+}
