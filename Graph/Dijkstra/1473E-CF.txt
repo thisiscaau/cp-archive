@@ -1,0 +1,57 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+ll const MAXN = 2e5 + 5,inf = 1e9 + 7;
+ll d[MAXN][2][2];
+vii g[MAXN];
+ll n,m;
+struct edge{
+    ll mi,mx,node,val;
+    bool operator > (edge const& other) const{
+        return val > other.val;
+    }
+};
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    memset(d,inf,sizeof(d));
+    for (int i = 1 ; i <= m ; i++){
+        ll a,b,w;
+        cin >> a >> b >> w;
+        g[a].pb(mp(w,b));
+        g[b].pb(mp(w,a));
+    }
+    d[1][0][0] = 0;
+    edge ori; ori.mi = 0; ori.mx = 0; ori.node = 1; ori.val = 0;
+    priority_queue<edge,vector<edge>,greater<edge>> pq;
+    pq.push(ori);
+    while (!pq.empty()){
+        auto e = pq.top(); pq.pop();
+        if (e.val!=d[e.node][e.mx][e.mi]){
+            continue;
+        }
+        for (auto des : g[e.node]){
+            for (int i = 0 ; i <= 1 - e.mx ; i++){
+                for (int j = 0 ; j <= 1 - e.mi; j++){
+                    if (d[des.se][e.mx | i][e.mi | j] > d[e.node][e.mx][e.mi] + (1-i+j)*des.fi){
+                        d[des.se][e.mx | i][e.mi | j] = d[e.node][e.mx][e.mi] + (1-i+j)*des.fi;
+                        edge add_edge;
+                        add_edge.node = des.se; add_edge.val = d[des.se][e.mx | i][e.mi | j];
+                        add_edge.mi = e.mi | j; add_edge.mx = e.mx | i;
+                        pq.push(add_edge);
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 2 ; i <= n ; i++){
+        cout << d[i][1][1] << " ";
+    }
+}
