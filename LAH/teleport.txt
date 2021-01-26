@@ -1,0 +1,49 @@
+#include<bits/stdc++.h>
+using namespace std;
+int n;
+map< pair<int,int> , vector<pair<int,int>> > g;
+int const N = 1e5 + 5;
+map<pair<int,int>, bool> vis;
+map<pair<int,int>, int> mp; 
+map<pair<int,int>, int> d;
+ pair<int,int> a,b;
+signed main(){
+    freopen("TELEPORT.inp","r",stdin);
+    freopen("TELEPORT.out","w",stdout);
+    cin >> a.first >> a.second >> b.first >> b.second;
+    if (a==b){
+        cout << "0";
+        return 0;
+    }
+    vis[a] = false; vis[b] = false;
+    cin >> n;
+    for (int i = 1 ; i <= n ; i++){
+        pair<int,int> u,v;
+        cin >> u.first >> u.second >> v.first >> v.second;
+        g[u].push_back(v);
+        vis[u] = false;
+        vis[v] = false;
+        g[v].push_back(u);
+    }
+    d[a] = 0;
+    vis[a] = true;
+    queue<pair<int,int>> q;
+    q.push(a);
+    while (!q.empty()){
+        pair<int,int> u = q.front(); q.pop();
+        if (u==b) break;
+        for (int i = 0 ; i < g[u].size() ; i++){
+            if (!vis[g[u][i]]){
+                vis[g[u][i]] = true;
+                d[g[u][i]] = d[u] + 10;
+                q.push(g[u][i]);
+            }
+        }
+    }
+    if (!vis[b]){
+        cout << "No solution" << endl;
+    }
+    else {
+        cout << d[b] << endl;
+    }
+}
