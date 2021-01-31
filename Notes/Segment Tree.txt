@@ -1,0 +1,64 @@
+# Tết School : Day 2 : Segment Tree
+Ý tưởng của segment tree : Dựng lên một cây nhị phân quản lý các đoạn [L,R]
+trên mảng, trục số,... => data structure dùng tốt cho query 
+Time complexity : O(log n) per query
+
+// khai báo mảng segment tree (có thể struct,int,pii,...) tùy case
+ll st[4*MAXN];
+
+// dựng cây
+void build(ll idx,ll l,ll r){
+    idx : số hiệu của nút
+    l : bound trái , r : bound phải
+    if (l == r){
+        leaf case
+        st[idx] = a[l];
+        return;
+    }
+    ll tm = (l+r)/2; // divide
+    build(idx*2,l,tm);
+    build(idx*2+1,tm+1,r);
+    st[idx] = st[idx*2] + st[idx*2+1]; (*)
+}
+
+(*) tùy theo bài toán mà chúng ta fix phần này, đại khái chỗ đó mình sẽ merge 2 node lại
+một số t/h ví dụ như tính gcd và của range và frequency của nó trong range thì mình phải
+viết một hàm merge chẳng hạn ,...
+
+// truy vấn
+
+// tùy bài toán mà mình sẽ chọn loại dữ liệu
+
+ll get(ll idx,ll tl,ll tr,ll l,ll r){
+    idx : số hiệu node
+    tl : range của node , tr : range của node
+    l : range của query , r : range của query
+    if (r < tl || tr < l){
+        return -inf;
+    }
+    if (l <= tl && tr <= r){
+        return t[idx];
+    }
+    ll tm = (tl+tr)/2;
+    return max(get(2*idx,tl,tm,l,r),get(2*idx+1,tm+1,tr,l,r));
+}
+
+// update
+
+void update(ll idx,ll tl,ll tr,ll i,ll v){
+    idx : số hiệu node tl,tr : range
+    // set a[i] = v
+    if (i < l || i > r){
+        return;
+    }
+    if (l == r){
+        t[idx] = v;
+        return;
+    }
+    ll tm = (tl+tr)/2;
+    update(idx*2,tl,tm,i,v);
+    update(idx*2+1,tm+1,tr,i,v);
+    t[idx] = max(t[idx*2],t[idx*2+1]);
+}
+
+// lazy update

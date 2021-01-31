@@ -1,0 +1,60 @@
+// caau segment tree
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+const ll MAXN = 1e6 + 1;
+string s;
+ll q;
+node t[MAXN];
+struct node{
+    ll optimal,open,close;
+    node(int opt,int o,int c){
+        optimal = opt;
+        open = o;
+        close = c;
+    }
+    node operator + (const node& l,const node& r){
+        node res;
+        ll tmp = min(l.open,r.close);
+        res.optimal = l.optimal + r.optimal + tmp;
+        res.open = l.open + r.open - tmp;
+        res.close = l.close + r.close - tmp;
+        return res;
+    }
+};
+void build(ll v,ll l,ll r){
+    if (l == r){
+        if (s[l] == '(') t[v] = node(0,1,0);
+        else t[v] = node(0,0,1);
+        return;
+    }
+    ll tm = (l+r)/2;
+    build(v*2,l,tm);
+    build(v*2+1,tm+1,r);
+    st[v] = st[v*2] + st[v*2+1];
+}
+node query(ll id,ll l,ll r,ll u,ll v){
+    if (v < l || u > r){
+        return node(0,0,0);
+    }
+    if (u <= l && r <= v){
+        return st[v];
+    }
+    ll tm = (l+r)/2;
+    return query(id*2,l,mid,u,v) + query(id*2+1,mid+1,r,u,v);
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> s;
+    build(1,1,n);
+    cin >> q;
+    for (int i = 1 ; i <= q ; i++){
+        ll l,r;
+        cout << query(1,1,n,l,r).optimal << endl;
+    }
+}
