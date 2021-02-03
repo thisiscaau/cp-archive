@@ -1,0 +1,45 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+ll triesize=0;
+struct node{
+    int vis;
+    int child[30];
+};
+node trie[1000000];
+void init(int u) {
+    memset(trie[u].child,-1,sizeof(trie[u].child));
+    trie[u].vis=0;
+}
+void push(string s) {
+    int p=0;
+    for(int i=0 ; i<s.length() ; i++) {
+        if(trie[p].child[s[i]-97]==-1) {
+            init(++triesize);
+            trie[p].child[s[i]-97]=triesize; 
+        }
+        p=trie[p].child[s[i]-97];
+        trie[p].vis++;
+    }
+}
+string str;
+ll dfs(int u,ll idx) {
+    if (idx == str.size()) return trie[u].vis; 
+    ll cur = str[idx] - 'a';
+    if (trie[u].child[cur]==-1) return -1;
+    return dfs(trie[u].child[cur],idx+1);
+}
+ll n,m;
+signed main() {
+    cin >> n >> m;
+    init(0);
+    for(int i=1 ; i<=n ; i++) {
+        cin>>str;
+        push(str);
+    }
+    for (int i = 1 ; i <= m ; i++){
+        cin >> str;
+        cout << dfs(0,0) << endl;
+    }
+    return 0;
+}

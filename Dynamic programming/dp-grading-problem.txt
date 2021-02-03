@@ -1,0 +1,77 @@
+// Độ phức tạp thuật toán : n*k*sum*k worst case : 20^3 * 200 = 1e6 quá đủ để AC :v
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+bool dp[21][21][205];
+ll judge,prob,tot;
+ll a[21][21];
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> tot >> prob >> judge;
+    for (int i = 1 ; i <= judge ; i++){
+        for (int j = 1 ; j <= prob ; j++){
+            cin >> a[i][j];
+        }
+    }
+    memset(dp,false,sizeof(dp));
+    // dp[i][j][tot] problem : i,judger : j,current sum :tot
+    // base case
+    for (int j = 1 ; j <= judge ; j++){
+        dp[0][j][0] = true; // chưa xét bài nào => dù đang xét người nào thì tổng hiện tại 
+        // cũng bằng 0
+    }
+    // dp
+    for (int i = 0 ; i < prob ; i++){
+        // xét tất cả t/h từ 0 -> số bài - 1
+        for (int j = 1 ; j <= judge ; j++){
+            // xét tất cả người giám khảo
+            for (int sum = 0 ; sum <= tot ; sum++){
+                // xét tất cả điểm
+                if (dp[i][j][sum]){
+                    /* nếu tồn tại 1 cách chọn điểm
+                     sao cho đã chọn i bài và bài cuối là của người j
+                     với tổng điểm sum
+                    */
+                    for (int nj = 1 ; nj <= judge ; nj++){
+                        // chọn người cho bài tiếp theo : i+1
+                        ll nsum = sum + a[nj][i+1]; // điểm mới
+                        if (nsum <= tot){
+                            dp[i+1][nj][nsum] = true; 
+                            /* vì có thể chọn được điểm để có tổng = sum
+                            => nếu lấy thêm điểm a[nj][i+1] thì tổng = nsum
+                            là khả thi */
+                            /* vì mình chỉ quan tâm chọn điểm sao cho = tot
+                            nên nếu > tot thì bỏ qua coi như không khả thi */
+                        }
+                    }
+                }
+            }
+        }
+    }
+    vector<ll> ans;
+    bool ok = false;
+    ll problem = prob, cur = tot;
+    while (problem){
+        for (int i = 1 ; i <= judge ; i++){
+            if (dp[problem][i][cur]){
+                ans.push_back(a[i][problem]);
+                problem--;
+                cur -= a[i][problem];
+                ok = true;
+                break;
+            }
+        }
+        if (ok){
+            ok = false;
+        }
+        else {
+            cout << "NO";
+            return 0;
+        }
+    }
+    reverse(ans.begin(),ans.end());
+    for (auto i : ans){
+        cout << i << " ";
+    }
+}
