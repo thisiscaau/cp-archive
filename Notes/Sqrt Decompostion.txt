@@ -1,0 +1,76 @@
+Tết School Day 3 : Chia Căn
+Ý tưởng : chia array thành các array nhỏ hơn
+có kích thước đúng bằng sqrt(n)
+=> nếu mình pre calculate sum của từng đoạn
+=> trả lời query trong sqrt(n)
+? Tại sao không dùng prefix sum để trả lời trong O(1)
+Ưu điểm : update không thay đổi time complexity
+
+(*) Implementation
+// Subarray Sum Sqrt Decomp
+ll n;
+vector<ll> a(n);
+ll sz = sqrt(n + .0) + 1;
+vector<ll> b(sz);
+
+for (int i = 0 ; i < n ; i++){
+    b[i/len] += a[i];
+}
+
+for (;;){
+    ll l,r,sum = 0;
+    cin >> l >> r;
+    for (int i = l ; i <= r; ){
+        if (i % len == 0 && i + len - 1 <= r){
+            sum += b[i/len];
+            i += len;
+        }
+        else {
+            sum += a[i];
+            ++i;
+        }
+    }
+}
+
+P/s : However cái ở trên chia nhiều => chậm hơn
+bản improve
+
+Formula :sigma(l,r) a[i] = sigma(l,(k+1)*s-1) a[i]
++ sigma(k+1,p-1) b[i] + sigma(p.s,r) a[i]
+
+(*) Implementation
+ll sum = 0 , cl = l / sz , cr = r / sz;
+if (cl == cr){
+    for (int i = l ; i <= r ; i++){
+        sum += a[i];
+    }
+    o(sqrt(n))
+}
+else {
+    for (int i = l , end = (cl+1)*sz-1, i <= end ; i++){
+        sum += a[i];
+    }
+    for (int i = cl+1 ; i <= cr - 1; i++){
+        sum += b[i];
+    }
+    for (int i = cr*sz; i <= r ; i++){
+        sum += a[i];
+    }
+}
+
+(*) Update in sqrt decomp
+solution : add up the difference
+assign a[i] = v;
+==>      b[i/sz] += v - a[i];
+But how about minimal/maximal type queries, how can
+we deal with it, we just have to update a[i] = v
+and then recompute b[i/sz] in O(sqrt(n))
+
+Additional on update queries
+
+# update on interval
+You can use two block arrays b and c, one to 
+keep track of element updates and another
+to keep track of answer to the query
+
+(*) Mo's Algorithm

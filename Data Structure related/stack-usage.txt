@@ -1,0 +1,30 @@
+// nearest bigger element using stack
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+ll const N = 1e5 + 5;
+ll ans[N],a[N];
+ll n,q;
+stack<ll> st;
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> q;
+    for (int i = 1 ; i <= n ; i++){
+        cin >> a[i];
+    }
+    for (int i = n ; i >= 1 ; i--){
+        while (!st.empty() && a[i] >= st.top()){
+            st.pop();
+        }
+        ans[i] = st.size();
+        st.push(a[i]);
+    }
+    for (int i = 1 ; i <= q ; i++){
+        ll a;
+        cin >> a;
+        cout << ans[a] << endl;
+    }
+}

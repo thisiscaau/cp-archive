@@ -1,0 +1,10 @@
+notes on bugs for quicker debug stage
+1. cant get last element of set by using 
+*set.end() instead use *set.rbegin()
+(get first element by *set.begin())
+2. Mind your index-base
+3. Mind the for loop
+4. Divide by 0
+5. Calculations
+6. Try to print out the algorithm's process
+7. get a sarco device

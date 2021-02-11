@@ -1,0 +1,40 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+const ll N = 1e5 + 5;
+ll n,x,y,ans = 0;
+ll a[N];
+set<ll> st;
+signed main(){
+    //freopen("CANDYBOX.inp","r",stdin);
+    //freopen("CANDYBOX.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> x >> y;
+    for (int i = 1 ; i <= n ; i++){
+        cin >> a[i];
+    }
+    ll l = 1 ,r;
+    for (int r = 1 ; r <= n; r++){
+        st.insert(a[r]);
+        while (st.size() > x && l < r){
+            st.erase(a[l]);
+            l++;
+            st.insert(a[l]);
+        }
+        if (st.size() == x){
+            ll idx = 0, cur = 0;
+            set<ll>::iterator id;
+            for (id = st.begin() ; id != st.end() ; id++){
+                idx++;
+                if (idx == y){
+                    cur += *id;
+                    break;
+                }
+            }
+            cur += *st.rbegin() + *st.begin();
+            ans = max(cur,ans);
+        }
+    }
+    cout << ans;
+}
