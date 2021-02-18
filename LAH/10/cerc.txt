@@ -1,0 +1,65 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+ll n,ox,oy,r;
+struct cir{
+    ll ox_,oy_,r_;
+    bool operator < (const cir& other){
+        return ox_ < other.ox_;
+    }
+} c[2005];
+map<pair<ll,ll>,vector<cir>> mp;
+ll cnt[2005];
+ll gcd(ll a,ll b){
+    while (b){
+        a %= b;
+        swap(a,b);
+    }
+    return a;
+}
+void inp(ll ox_,ll oy_,ll r_){
+    pair<ll,ll> slope; ll g = gcd(ox_,oy_);
+    slope.fi = ox_ / g; slope.se = oy_ / g;
+    cir cur; cur.ox_ = ox_ ; cur.oy_ = oy_ ; cur.r_ = r_;
+    mp[slope].pb(cur);
+}
+bool disjoint(const cir& a,const cir& b){
+    ll dx = a.ox_ - b.ox_; dx *= dx;
+    ll dy = a.oy_ - b.oy_; dy *= dy;
+    long double dr = (a.r_ + b.r_)*1.0;
+    long double dist = sqrt(dx+dy);
+    return dist >= dr;
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    //freopen("CERC.inp","r",stdin);
+    //freopen("CERC.out","w",stdout);
+    cin >> n;
+    for (int i = 1 ; i <= n ; i++){
+        cin >> ox >> oy >> r;
+        inp(ox,oy,r);
+        c[i].ox_ = ox; c[i].oy_ = oy ; c[i].r_ = r;
+    }
+    ll q = 0;
+    for (auto p : mp){
+        sort(p.se.begin(),p.se.end());
+        ll n = p.se.size(), mx = 0, tot = 0;
+        for (int i = 0 ; i < n ; i++){
+            cir pre = p.se[i]; tot = 1;
+            for (int j = i+1 ; j < n ; j++){
+                if (disjoint(pre,p.se[j])){
+                    tot++;
+                    pre = p.se[j];
+                }
+            }
+            mx = max(mx,tot);
+            q = max(q,mx);
+        }
+        cnt[mx]++;
+    }
+    cout << mp.size() << " " << q << " " << cnt[q];
+}

@@ -1,0 +1,35 @@
+// aurelion sol phu ho
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+ll n,k;
+ll mat[3][5001];
+ll dp[3][5001];
+const ll inf = 1e9 + 7;
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    freopen("GAME.inp","r",stdin);
+    freopen("GAME.out","w",stdout);
+    cin >> n >> k;
+    for (int i = 0 ; i < 2 ; i++){
+        for (int j = 0 ; j < n ; j++){
+            cin >> mat[i][j];
+        }
+    }
+    dp[0][0] = mat[0][0]; // starting point
+    /* dp goes here */
+    for (int col = 1 ; col < n ; col++){
+        for (int row = 0 ; row < 2 ; row++){
+            ll tot = mat[row][col];
+            dp[row][col] = -inf;
+            for (int cnt = 1 ; cnt < k && cnt <= col ; cnt++){
+                tot += mat[row][col-cnt];
+                dp[row][col] = max(dp[row][col],tot + dp[1-row][col-cnt]);
+            }
+        }
+    }
+    // final odd case
+    dp[1][n-1] = max(dp[1][n-1],dp[0][n-1]+mat[1][n-1]);
+    cout << dp[1][n-1];
+}

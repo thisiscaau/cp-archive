@@ -1,0 +1,77 @@
+// aurelion sol phu ho
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+/* directions */
+ll dx[] = {1,0,-1,0};
+ll dy[] = {0,1,0,-1};
+ll dx_[] = {2,0,-2,0};
+ll dy_[] = {0,2,0,-2};
+/* variables */
+struct path{
+    ll x,y,x_,y_;
+} moves[1005];
+ll n,m,k;
+ll mat[21][21];
+bool done,killed[400];
+pair<ll,ll> pawn[400];
+void show(){
+    for (int i = 1 ; i < k ; i++){
+        cout << moves[i].x << " " << moves[i].y << " " << moves[i].x_ << " " << moves[i].y_;
+        cout << endl;
+    }
+}
+bool valid(ll x,ll y){
+    if (x < 1 || x > n || y < 1 || y > m) return false;
+    return true;
+}
+void back(ll idx){
+    if (done) return;
+    if (idx == k){
+        show();
+        done = true;
+        return;
+    }
+    for (int i = 1 ; i <= k ; i++){
+        if (killed[i]) continue;
+        ll x = pawn[i].fi , y = pawn[i].se,tmp;
+        for (int d = 0 ; d < 4 ; d++){
+            ll nx,ny,x_,y_;
+            nx = x + dx[d]; x_ = x + dx_[d];
+            ny = y + dy[d]; y_ = y + dy_[d];
+            if (mat[nx][ny] && !mat[x_][y_] && valid(x_,y_)){
+                tmp = mat[nx][ny];
+                killed[tmp] = true;
+                mat[nx][ny] = 0;
+                mat[x_][y_] = i;
+                mat[x][y] = 0;
+                pawn[i].fi = x_; pawn[i].se = y_;
+                moves[idx].x = x; moves[idx].x_ = x_;
+                moves[idx].y = y; moves[idx].y_ = y_;
+                back(idx+1);
+                /* restore settings */
+                killed[tmp] = false;
+                mat[nx][ny] = tmp;
+                mat[x_][y_] = 0;
+                mat[x][y] = i;
+                pawn[i].fi = x; pawn[i].se = y;
+            }
+        }
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);cout.tie(NULL);
+    freopen("IMMORTAL.inp","r",stdin);
+    freopen("IMMORTAL.out","w",stdout);
+    cin >> n >> m >> k;
+    done = false;
+    for (int i = 1 ; i <= k ; i++){
+        killed[i] = false;
+        cin >> pawn[i].fi >> pawn[i].se;
+        mat[pawn[i].fi][pawn[i].se] = i; 
+    }
+    back(1);
+}

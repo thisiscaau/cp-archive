@@ -1,0 +1,20 @@
+// aurelion sol phu ho
+#include<bits/stdc++.h>
+using namespace std;
+string str;
+int dp[30];
+int cnt = 0,mx = 0;
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);cout.tie(NULL);
+    freopen("TEXT.inp","r",stdin);
+    freopen("TEXT.out","w",stdout);
+    while (cin >> str){
+        cnt++;
+        char last = str[str.size()-1], head = str[0];
+        dp[last-'a'] = max(dp[last-'a'],dp[head-'a']+1);
+        mx = max(dp[last-'a'],mx);
+    }
+    printf("%d\n", cnt - mx);
+    printf("%d",cnt);
+}

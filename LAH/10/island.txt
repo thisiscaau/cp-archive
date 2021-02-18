@@ -1,0 +1,105 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+ll const inf = 1e9 + 7;
+ll n,m,nr,ng,nb;
+char mat[105][105];
+bool vis[105][105];
+ll dx[] = {-1,0,1,0};
+ll dy[] = {0,1,0,-1};
+ll dist[105][105]; // shortest path to nearest harbor
+vector<pair<ll,ll>> harbor;
+vector<pair<ll,ll>> bfs;
+void dfs(ll i,ll j,char c){
+    if (i < 1 || i > n || j < 1 || j > m){
+        return;
+    }
+    if (mat[i][j] != c){
+        return;
+    }
+    if (vis[i][j]){
+        return;
+    }
+    vis[i][j] = true;
+    for (int k = 0 ; k < 4 ; k++){
+        ll ni = i + dx[k], nj = j + dy[k];
+        dfs(ni,nj,c);
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            cin >> mat[i][j];
+            dist[i][j] = -1;
+            vis[i][j] = false;
+        }
+    }
+    /* counting island */
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            if (!vis[i][j]){
+                if (mat[i][j] == '1') nr++;
+                else if (mat[i][j] == '2') ng++;
+                else if (mat[i][j] == '3') nb++;
+                dfs(i,j,mat[i][j]);
+            }
+        }
+    }
+    /* shortest bridge */
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            if (mat[i][j] != '1') continue;
+            for (int k = 0 ; k < 4 ; k++){
+                ll ni = i + dx[k], nj = j + dy[k];
+                if (ni < 1 || ni > n || nj < 1 || nj > m){
+                    continue;
+                }
+                if (mat[ni][nj] == '0'){
+                    harbor.pb(mp(i,j));
+                    break;
+                }
+            }
+        }
+    }
+    for (auto p : harbor){
+        bfs.pb(p);
+        dist[p.fi][p.se] = 0;
+    }
+    for (int i = 0; i < bfs.size(); i++){
+        pair<ll,ll> now = bfs[i];
+        for (int r = 0 ; r < 4 ; r++){
+            ll ni = now.fi + dx[r], nj = now.se + dy[r];
+            if (ni < 1 || ni > n || nj < 1 || nj > m){
+                    continue;
+            }
+            if (dist[ni][nj] != -1) continue;
+            if (mat[ni][nj] != '0') continue;
+            ll to_dist = dist[now.fi][now.se] + 1;
+            dist[ni][nj] = to_dist;
+            bfs.pb(mp(ni,nj));
+        }
+    }
+    ll ans = inf;
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            if (mat[i][j] != '2') continue;
+            for (int r = 0 ; r < 4 ; r++){
+                ll ni = i + dx[r], nj = j + dy[r];
+                if (ni < 1 || ni > n || nj < 1 || nj > m){
+                    continue;
+                }
+                if (mat[ni][nj] == '0' && dist[ni][nj] != -1){
+                    ans = min(ans,dist[ni][nj]);
+                }
+            }
+        }
+    }
+    cout << nr << " " << ng << " " << nb << " " << ans;
+}

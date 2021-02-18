@@ -1,0 +1,53 @@
+// aurelion sol phu ho
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+string s;
+string para;
+map<string,ll> cnt;
+ll timer = 0;
+void parser(){
+    ll idx = 0,t = 0,need = 0;
+    string cur = "";
+    while (idx < para.size()){
+        if (para[idx] == '('){
+            idx++;
+        }
+        else if (isdigit(para[idx]) && cur.size() == 0 && t == 0){
+            need *= 10;
+            need += para[idx] - '0';
+            idx++;
+        }
+        else if ((para[idx] == ' ' || para[idx] == ')')&& cur.size() > 0 && t > 0){
+            cnt[cur] += t;
+            //cout << cur << " " << t << endl;
+            cur = ""; t = 0;
+            idx++;
+        }
+        else if (isalpha(para[idx])){
+            cur += para[idx];
+            idx++;
+        }
+        else if (isdigit(para[idx]) && cur != ""){
+            t *= 10;
+            t += para[idx] - '0';
+            idx++;
+        }
+        else {
+            timer += need;
+            need = 0;
+            idx++;
+        }
+    }
+    cout << timer << endl;
+}
+signed main(){
+    do {
+        getline(cin,s);
+        para += s + " ";
+    } while (s.length() > 0);
+    parser();
+    for (auto p : cnt){
+        cout << p.first << " " << p.second << endl;
+    }
+}
