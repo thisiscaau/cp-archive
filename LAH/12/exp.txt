@@ -1,0 +1,114 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mp make_pair
+#define fi first
+#define se second
+#define pb push_back
+#define exp s
+ll const inf = 1e9 + 7;
+vector<ll> cur;
+stack<vector<ll>> st;
+string exp;
+ll n,num;
+ll num_count = 0;
+ll get_mx(){
+    ll mx = -inf,sum = 0;
+    for (int i = 0 ; i < cur.size() ; i++){
+        sum += cur[i];
+        mx = max(mx,sum);
+        sum = max(sum,0ll);
+    }
+    return mx;
+}
+ll get_md(){
+    if (cur.size()==0) return -inf;
+    sort(cur.begin(),cur.end());
+    vector<ll>::iterator mid = (cur.begin() + (cur.size()+1)/2 - 1);
+    ll res = *mid;
+    return res;
+}
+bool get_num = false;
+void parser(){
+    ll md,mx; num = 0;
+    bool minus = false;
+    for (int idx = 0 ; idx < n ; idx++){
+        if (exp[idx] == '(' || exp[idx] == '['){
+            st.push(cur);
+            cur.clear();
+        }
+        else if (exp[idx] == ')'){
+            if (get_num){
+                num_count++;
+                get_num = false; cur.pb(num);
+                num = 0;
+            }
+            mx = get_mx();
+            cur = st.top(); st.pop();
+            if (mx != -inf){
+                cur.pb(mx);
+            }
+        }
+        else if (exp[idx] == ']'){
+            if (get_num){
+                num_count++;
+                get_num = false; cur.pb(num);
+                num = 0;
+            }
+            md = get_md();
+            cur = st.top(); st.pop();
+            if (md != -inf){
+                cur.pb(md);
+            }
+        }
+        else if (isdigit(exp[idx])){
+            get_num = true; num *= 10; 
+            num += exp[idx] - '0';
+            if (idx == n-1){
+                if (minus) num *= -1;
+                cur.pb(num);
+                get_num = false;
+            }
+        }
+        else if (exp[idx] == ',' && get_num){
+            num_count++;
+            if (minus){
+                num *= -1;
+                minus = false;
+            }
+            cur.pb(num);
+            num = 0; get_num = false;
+        }
+        else if (exp[idx] == '-'){
+            get_num = true;
+            minus = true;
+        }
+    }
+    ll exp_sum = 0;
+    /*cout << "epx_sum ";
+    for (auto i : cur){
+        cout << i << " ";
+    }*/
+    for (int i = 0 ; i < cur.size(); i++){
+        exp_sum += cur[i];
+    }
+    cout << exp_sum << endl;
+}
+ll exp_count(){
+    ll res = 0;
+    for (int i = 0 ; i < n ; i++){
+        if (!isdigit(exp[i])) continue;
+        res++;
+        while (isdigit(exp[i])) i++;
+    }
+    return res;
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    freopen("EXP.inp","r",stdin);
+    freopen("EXP.out","w",stdout);
+    cin >> exp; n = exp.size();
+    cout << exp_count() << endl;
+    parser();
+}

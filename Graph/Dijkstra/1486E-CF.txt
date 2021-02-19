@@ -1,0 +1,64 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+ll const MAXN = 2e5 + 5,inf = 1e9 + 7;
+struct edge{
+    ll node,w,ft;
+    bool operator > (edge const& other) const {
+        return w > other.w;
+    }
+};
+ll n,m;
+vector<pair<ll,ll>> g[MAXN];
+ll d[MAXN][51];
+void dijkstra(){
+    memset(d,inf,sizeof(d));
+    d[1][0] = 0;
+    edge ori; ori.node = 1; ori.w = 0; ori.ft = 0;
+    priority_queue<edge,vector<edge>,greater<edge>> pq;
+    pq.push(ori);
+    while (!pq.empty()){
+        auto e = pq.top(); pq.pop();
+        if (e.w != d[e.node][e.ft]) continue;
+        for (auto v : g[e.node]){
+            if (e.ft == 0){
+                if (d[v.fi][v.se] > d[e.node][0] + v.se*v.se){
+                    d[v.fi][v.se] = d[e.node][0] + v.se*v.se;
+                    edge upd; upd.node = v.fi; upd.w = d[v.fi][v.se] ; upd.ft = v.se;
+                    pq.push(upd);
+                }
+            }
+            else {
+                if (d[v.fi][0] > d[e.node][e.ft] + 2*v.se*e.ft + v.se*v.se){
+                    d[v.fi][0] = d[e.node][e.ft] + 2*v.se*e.ft + v.se*v.se;
+                    edge upd; upd.node = v.fi; upd.w = d[v.fi][0]  ; upd.ft = 0;
+                    pq.push(upd);
+                }
+            }
+        }
+    }
+    for (int i = 1 ; i <= n ; i++){
+        if (d[i][0] >= inf){
+            cout << "-1 ";
+        }
+        else {
+            cout << d[i][0] << " ";
+        }
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i <= m ; i++){
+        ll u,v,w;
+        cin >> u >> v >> w;
+        g[u].pb(mp(v,w));
+        g[v].pb(mp(u,w));
+    }
+    dijkstra();
+}
