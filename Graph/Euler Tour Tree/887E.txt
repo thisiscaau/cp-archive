@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+/* declaration */
+ll n,timer = 0;
+ll const MAXN = 2e5 + 5;
+vector<ll> g[MAXN];
+ll t[MAXN],st[MAXN],en[MAXN],val[MAXN*2],seg[8*MAXN];
+bool lazy[8*MAXN];
+/* algorithms */
+void euler(ll u){
+    st[u] = ++timer;
+    val[timer] = t[u];
+    for (auto v : g[u]) euler(v);
+    en[u] = ++timer;
+    val[timer] = t[u];
+}
+void build(ll id,ll l,ll r){
+    if (l == r){
+        seg[id] = val[l];
+        return;
+    }
+    ll m = (l+r)/2;
+    build(id*2,l,m);
+    build(id*2+1,m+1,r);
+    seg[id] = seg[id*2] + seg[id*2+1];
+    return;
+}
+void lazy_upd(ll id,ll l,ll r){
+    if (lazy[id]){
+        ll m = (l+r)/2;
+        seg[id*2] = (m-l+1) - seg[id*2];
+        lazy[id*2] = !lazy[id*2];
+        seg[id*2+1] = (r-m) - seg[id*2+1];
+        lazy[id*2+1] = !lazy[id*2+1];
+        lazy[id] = 0;
+        return;
+    }
+}
+void upd(ll id,ll l,ll r,ll tl,ll tr){
+    /* out of range */
+    if (tl > r || tr < l) return;
+    if (l >= tl && r <= tr){
+        seg[id] = (r-l+1) - seg[id]; // switch
+        lazy[id] = !lazy[id];
+        return;
+    }
+    lazy_upd(id,l,r);
+    ll m = (l+r)/2;
+    upd(id*2,l,m,tl,tr);
+    upd(id*2+1,m+1,r,tl,tr);
+    seg[id] = seg[id*2] + seg[id*2+1];
+    return;
+}
+ll get_sum(ll id,ll l,ll r,ll tl,ll tr){
+    if (tl > r || tr < l) return 0;
+    if (l >= tl && r <= tr) return seg[id];
+    lazy_upd(id,l,r);
+    ll m = (l+r)/2;
+    return get_sum(id*2,l,m,tl,tr) + get_sum(id*2+1,m+1,r,tl,tr);
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n;
+    for (int i = 2 ; i <= n ; i++){
+        ll v;
+        cin >> v;
+        g[v].pb(i);
+    }
+    for (int i = 1 ; i <= n ; i++){
+        cin >> t[i];
+    }
+    euler(1);
+    build(1,1,2*n);
+    ll q;  cin >> q;
+    while (q--){
+        string opt; int r;
+        cin >> opt >> r;
+        if (opt == "get"){
+            cout << get_sum(1,1,2*n,st[r],en[r]) / 2<< endl;
+        }
+        else {
+            upd(1,1,2*n,st[r],en[r]);
+        }
+    }
+}
