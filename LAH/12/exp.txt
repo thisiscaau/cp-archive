@@ -24,8 +24,7 @@ ll get_mx(){
 ll get_md(){
     if (cur.size()==0) return -inf;
     sort(cur.begin(),cur.end());
-    vector<ll>::iterator mid = (cur.begin() + (cur.size()+1)/2 - 1);
-    ll res = *mid;
+    ll res = cur[cur.size()/2];
     return res;
 }
 bool get_num = false;

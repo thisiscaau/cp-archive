@@ -1,0 +1,113 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define pb push_back
+const int N = 1e5 + 5;
+int n,m,timer = 0;
+int const inf = 2e5 + 5;
+int ett[2*N],st[N],depth[2*N],lg[2*N],sz[N];
+int sp[2*N][19],par[N],best[N];
+bool vis[N];
+vector<int> g[N];
+void euler(int u, int p) {
+    depth[u] = depth[p] + 1;
+    ett[++timer] = depth[u];
+    st[u] = timer;
+    for (auto v : g[u]){
+        if (v != p){
+            euler(v,u);
+            ett[++timer] = depth[u];
+        }
+    }
+}
+void rmq(){
+    /* logarithms */
+    lg[0] = -1;
+    for (int i = 1 ; i <= timer ; i++){
+        sp[i][0] = ett[i];
+        lg[i] = lg[i/2] + 1;
+    }
+    /* sparse table */
+    for (int j = 1 ; j <= 18 ; j++){
+        for (int i = 1 ; i + (1 << j) - 1 <= timer ; i++){
+            sp[i][j] = min(sp[i][j-1],sp[i + (1 << (j-1))][j-1]);
+        }
+    }
+}
+int lca(int u,int v){
+   int l = min(st[u],st[v]),r = max(st[u],st[v]);
+   int j = lg[r-l+1];
+   int common = min(sp[l][j],sp[r - (1 << j) + 1][j]);
+   return depth[u] + depth[v] - 2*common;
+}
+int find_size(int node,int p = -1){
+    if (vis[node]) return 0;
+    sz[node] = 1;
+    for (auto v : g[node]){
+        if (v != p){
+            sz[node] += find_size(v,node);
+        }
+    }
+    return sz[node];
+}
+int find_centroid(int u,int p,int n){
+    for (auto v : g[u]){
+        if (v != p){
+            if (!vis[v] && sz[v] > n/2){
+                return find_centroid(v,u,n);
+            }
+        }
+    }
+    return u;
+}
+void centroid_decomp(int node = 1,int p = -1){
+    find_size(node);
+    int c = find_centroid(node,-1,sz[node]);
+    vis[c] = true;
+    par[c] = p;
+    for (auto u : g[c]){
+        if (!vis[u]){
+            centroid_decomp(u,c);
+        }
+    }
+}
+void mark(int node){
+    if (best[node] == 0) return;
+    int pos = node;
+    while(pos){
+        best[pos] = min(best[pos],lca(node,pos));
+        pos = par[pos];
+    }
+}
+int query(int node){
+    int res = inf; int pos = node;
+    while (pos){
+        best[node] = min(best[node],best[pos] + lca(node,pos));
+        res = min(res,best[node]);
+        pos = par[pos];
+    }
+    return res;
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i < n ; i++){
+        int u,v;
+        cin >> u >> v;
+        g[u].pb(v);
+        g[v].pb(u);
+    }
+    for (int i = 1 ; i <= n ; i++){
+        best[i] = inf;
+    }
+    depth[0] = 0;
+    euler(1,0); rmq();
+    centroid_decomp();
+    mark(1);
+    for (int i = 1 ; i <= m ; i++){
+        int opt,node;
+        cin >> opt >> node;
+        if (opt == 1) mark(node);
+        else cout << query(node) << endl;
+    }
+}
