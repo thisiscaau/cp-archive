@@ -1,0 +1,74 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 1e5 + 5;
+/* declaration */
+ll n,m,res = 0;
+ll p[MAXN],sz[MAXN];
+set<ii> following[MAXN];
+set<ll> follower[MAXN]; 
+/* workspace */
+ll find(ll u){
+    return p[u] == u ? u : find(p[u]);
+}
+void follow(ll u,ll v){
+    ll u_ = find(u), v_ = find(v);
+    if (u_ == v_) return;
+    auto it = following[v_].lower_bound({u_,0});
+    if (it != following[v_].end() && it->first == u_){
+        res += sz[u_]*sz[v_]*2;
+        if (follower[u_].size() + following[u_].size() > follower[v_].size() + following[v_].size()){
+            swap(u_,v_);
+        }
+        vii new_follow;
+        for (auto e : following[u_]){
+            follower[e.fi].erase(e.se);
+            res -= sz[e.fi];
+            if (e.fi != v_) new_follow.pb(e);
+        }
+        following[u_].clear();
+        res -= sz[u_]*follower[u_].size();
+        res += sz[u_]*follower[v_].size();
+        vector<ll> new_followed;
+        for (auto a : follower[u_]){
+            ll a_ = find(a);
+            following[a_].erase({u_,a});
+            if (a_ != v_) new_followed.pb(a);
+        }
+        follower[u_].clear();
+        p[u_] = v_; sz[v_] += sz[u_];
+        for (auto e : new_follow) follow(e.se,e.fi);
+        for (auto a : new_followed) follow(a,v_);
+    }
+    else if (!follower[v_].count(u)){
+        res += sz[v_];
+        following[u_].emplace(v_,u);
+        follower[v_].insert(u);
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i <= n ; i++){
+        p[i] = i; sz[i] = 1;
+    }
+    for (int i = 1 ; i <= m ; i++){
+        ll u,v;
+        cin >> u >> v;
+        follow(u,v);
+        cout << res << endl;
+    }
+}

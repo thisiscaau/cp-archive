@@ -1,0 +1,73 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 2e5 + 5;
+/* declaration */
+ll n,m,mst = 0;
+ll link[MAXN],depth[MAXN],add[MAXN];
+bool used[MAXN];
+vii adj[MAXN];
+struct edge{
+    ll u,v,w,id;
+    bool operator < (edge const& other) const{
+        return w < other.w;
+    }
+};
+vector<edge> g;
+/* workspace */
+ll find(ll u){
+    return par[u] == u ? u : find(par[u]);
+}
+bool join(ll u,ll v){
+    u = find(u); v = find(v);
+    if (u != v){
+        if (sz[v] > sz[u]) swap(u,v);
+        par[v] = u;
+        sz[u] += sz[v];
+        return true;
+    }
+    return false;
+}
+void dfs(ll u){
+    for (auto& [w,v] : adj[u]){
+        if (v != par[u]){
+            par[v] = u; depth[v] = depth[u] + 1;
+            link[v] = w;
+            dfs(v);
+        }
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i <= m ; i++){
+        edge e; e.id = i;
+        cin >> e.u >> e.v >> e.w;
+        g.pb(e);
+    }
+    sort(g.begin(),g.end());
+    for (auto e : g){
+        if (join(e.u,e.v)){
+            mst += e.w;
+            used[e.id] = true;
+            adj[e.u].pb(mp(e.w,e.v));
+            adj[e.v].pb(mp(e.w,e.u));
+        }
+    }
+    depth[1] = 1;
+    dfs(1);
+    memset(add,-1,sizeof(add));
+}
