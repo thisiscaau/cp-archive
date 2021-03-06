@@ -1,0 +1,27 @@
+# Bài toán RMQ và LCA
+Table of contents :
+1. Lý thuyết
+2. Giai thuat
+3. Ứng dụng
+
+1. LÝ THUYẾT
+(*) Bài toán - Khái niệm cơ bản: 
+-LCA : Lowest Common Ancestor
+-lca(T,u,v) : query trong cây T tìm một node X là tổ tiên của u,v và xa
+root của T nhất.
+-RMQ : Range minimum query
+- rmq(a,i,j) : return lại giá trị min/max trong range [i,j] trên mảng a
+- +-1 rmq : rmq trên mảng mà hiệu giữa hai phần tử liền kề bất kỳ 
+là +1 hoặc -1
+(*) Kết hợp RMQ & LCA trong các cuộc thi tin học
+Có thể kể đến các bài như POI 2002 hay bài Mountain trong Shanghai 2003...
+Do đó việc thông thạo RMQ & LCA rất quan trọng trong nghiên cứu và
+lập trình.
+
+2. GIẢI THUẬT
+Đến nay thì các công cuộc trong việc nghiên cứu bài toán rmq & lca đã được
+xem gần như là hoàn thành sau đây là một số thuật toán được sử dụng cùng với độ
+phức tạp để query của chúng.
+
+
+

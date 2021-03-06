@@ -1,0 +1,72 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = (1 << 30) + 777, MAXN = 1e5 + 5;
+/* declaration */
+ll k,n,mx;
+ll dp[MAXN];
+string s;
+vii tmp[MAXN];
+/* workspace */
+signed main(){
+    freopen("BLIST.inp","r",stdin);
+    freopen("BLIST.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> k; cin >> s;
+    ll n = s.size();
+    for (int i = 1 ; i <= n+1 ; i++){
+        dp[i] = inf;
+    }
+    dp[0] = -1;
+    /* keep in mind 0-index based */
+    for (int i = 1 ; i <= n ; i++){
+        ll mask = 0; ll r = min(n,i+k-1);
+        for (int j = i ; j <= r ; j++){
+            mask = (mask << 1) | (s[j-1] - '0');
+            mx = max(mx,mask);
+            ll l = 0,r = i+1;
+            while (r-l-1){
+                ll mid = (l+r)/2;
+                if (dp[mid] < mask){
+                    l = mid;
+                }
+                else {
+                    r = mid;
+                }
+            }
+            if (dp[r] > mask){
+                tmp[j].pb(mp(r,mask));
+            }
+        }
+        for (auto p : tmp[i]){
+            if (dp[p.fi] > p.se){
+                dp[p.fi] = p.se;
+            }
+        }
+    }
+    cout << mx << " ";
+    ll l = 0, r = n+1;
+    while (r - l - 1){
+        ll mid = (l+r)/2;
+        if (dp[mid] < inf){
+            l = mid;
+        }
+        else {
+            r = mid;
+        }
+    }
+    cout << l;
+}

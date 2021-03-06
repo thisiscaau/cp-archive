@@ -1,0 +1,69 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 2e5 + 5;
+/* declaration */
+ii following[MAXN];
+vector<ll> followed[MAXN];
+ll par[MAXN],sz[MAXN];
+ll n,m,res = 0;
+/* workspace */
+ll find(ll u){
+    return p[u] == u ? u : find(p[u]);
+}
+void follow(ll u,ll v){
+    /* u --> v */
+    ll u_ = find(u), v_ = find(v);
+    if (u_ == v_) return;
+    auto it = edge[v_].lower_bound({u_,0});
+    if (it != edge[v_].end() && it->first == u_){
+        res += 2*sz[u_]*sz[v_];
+        if (following[u_].size() + followed[u_].size() > following[v_].size() + followed[v_].size()){
+            swap(u_,v_);
+        }
+        par[u_] = v_; sz[u_] += sz[v_];
+        vii new_edge;
+        for (auto e : following[u_]){
+            followed[e.fi].erase(e.se);
+            res -= sz[e.fi];
+            if (e.fi != v_) new_edge.pb(e);
+        }
+        following[u_].clear();
+        vector<ll> new_group;
+        for (auto a : followed[u_]){
+            ll a_ = find(a);
+            following[a_].erase({u_,a});
+            if (a_ != v_) new_group.pb(a);
+        }
+        followed[u_].clear();
+        for (auto e : new_edge) follow(e.se,e.fi);
+        
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    ll n,m;
+    cin >> n >> m;
+    for (int i = 1 ; i <= n ; i++){
+        par[i] = i; sz[i] = 1;
+    }
+    for (int i = 1 ; i <= m ; i++){
+        ll u,v;
+        cin >> u >> v;
+        follow(u,v);
+        cout << res << endl;
+    }
+}

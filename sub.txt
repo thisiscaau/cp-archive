@@ -1,0 +1,73 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll unsigned long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+vector<string> vi;
+set<ii> num[2];
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 2e5 + 5;
+/* declaration */
+ll n,m,mx;
+/* workspace */
+ll get(string& str,ll idx,ll len){
+    ll mask = 0;
+    for (int i = idx ; i < idx + len ; i++){
+        mask <<= 1ll;
+        mask |= str[i] - 'a';
+    }
+    return mask & ((1ll << len) - 1);
+}
+void add(ll number,ll len,ll idx,ll st){
+    if (st || num[1 ^ idx].find(mp(number,len)) != num[1 ^ idx].end()){
+        num[idx].insert(mp(number,len));
+    }
+}
+signed main(){
+    freopen("SUB.inp","r",stdin);
+    freopen("SUB.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n;
+    for (int i = 1 ; i <= n ; i++){
+        string s;
+        cin >> s;
+        vi.pb(s);
+    }
+    ll tmp_ = 0;
+    for (int len = 61 ; len >= 1 ; len--){
+        ll mask = (1 << len) - 1, tmp = 0;
+        for (int i = 0 ; i < vi.size() ; i++){
+            tmp ^= 1;
+            num[tmp].clear();
+            if (len > vi[i].size()) break;
+            ll cur = get(vi[i],0,len);
+            add(cur,len,tmp,!i);
+            for (int j = len ; j < vi[i].size() ; j++){
+                cur <<= 1;
+                cur |= (int)(vi[i][j] - 'a');
+                cur &= mask;
+                add(cur,len,tmp,!i);
+            }
+            if (num[tmp].size() == 0) break;
+        }
+        if (num[tmp].size() > 0){
+            tmp_ = tmp;
+            break;
+        }
+    }
+    mx = 0;
+    for (auto it : num[tmp_]){
+        mx = max(mx,it.second);
+    }
+    cout << mx;
+}

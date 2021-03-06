@@ -1,0 +1,88 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 2e5 + 5;
+/* declaration */
+ll n,sz,len,idx;
+string s;
+char mat[1005][1005];
+/* workspace */
+ll cal(){
+    /* sz calculation */
+    ll idx = 0, cur = 0; n = 0;
+    while (idx < len){
+        if (s[idx] == '*') cur++,idx++;
+        else if (s[idx] >= 'a' && s[idx] <= 'z'){
+            n++; idx++;
+        }
+        else {
+            cur = 0;
+            while(s[idx] >= '0' && s[idx] < '9'){
+                cur = cur*10 + (s[idx]-'0');
+                idx++;
+            }
+            n += cur; idx++;
+        }
+    }
+    idx = 1;
+    while (idx * idx < n) idx++;
+    return idx;
+}
+void solve(ll i,ll j,ll i_,ll j_){
+    ll x,y,cur;
+    if (i > i_ || j > j_) return;
+    if (s[idx] == '*'){
+        idx++;
+        x=(i+i_)/2;
+        y=(j+j_)/2;
+        solve(i,j,x,y);
+        solve(i,y+1,x,j_);
+        solve(x+1,j,i_,y);
+        solve(x+1,y+1,i_,j_);
+    }
+    else if (s[idx] >= 'a' && s[idx] <= 'z'){
+        mat[i][j] = s[idx]; idx++;
+        solve(i,j+1,i,j_); 
+        solve(i+1,j,i_,j); 
+        solve(i+1,j+1,i_,j_); 
+    }
+    else {
+        while (s[idx] >= '0' && s[idx] <= '9'){
+            idx++;
+        }
+        for (int x = i ; x <= i_ ; x++){
+            for (int y = j ; y <= j_ ; y++){
+                mat[x][y] = s[idx];
+            }
+        }
+        idx++;
+    }
+}
+signed main(){
+    freopen("COMPRESS.inp","r",stdin);
+    freopen("COMPRESS.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> s; len = s.size();
+    n = cal(); idx = 0;
+    solve(1,1,n,n);
+    cout << n << endl;
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= n ; j++){
+            cout << mat[i][j];
+        }
+        cout << endl;
+    }
+}

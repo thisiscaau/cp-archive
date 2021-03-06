@@ -1,0 +1,70 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll int
+#define pb push_back
+/* constants */
+/* declaration */
+ll n;
+string dp[5001][6];
+/* workspace */
+string cal(string str1, string str2) 
+{ 
+	if (str1.length() > str2.length()) 
+		swap(str1, str2); 
+	string str = ""; 
+	int n1 = str1.length(), n2 = str2.length(); 
+	reverse(str1.begin(), str1.end()); 
+	reverse(str2.begin(), str2.end()); 
+	int carry = 0; 
+	for (int i=0; i<n1; i++) 
+	{ 
+		int sum = ((str1[i]-'0')+(str2[i]-'0')+carry); 
+		str.push_back(sum%10 + '0'); 
+		carry = sum/10; 
+	} 
+	for (int i=n1; i<n2; i++) 
+	{ 
+		int sum = ((str2[i]-'0')+carry); 
+		str.push_back(sum%10 + '0'); 
+		carry = sum/10; 
+	} 
+	if (carry) 
+		str.push_back(carry+'0'); 
+	reverse(str.begin(), str.end()); 
+    return str; 
+} 
+signed main(){
+    freopen("COLOR.inp","r",stdin);
+    freopen("COLOR.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> n;
+    for (int i = 0 ; i <= n ; i++){
+        for (int j = 0 ; j <= 5 ; j++){
+            dp[i][j] = "0";
+        }
+    }
+    for (int i = 1 ; i <= 5 ; i++){
+        dp[1][i] = "1";
+    }
+    for (int i = 1 ; i < n ; i++){
+        for (int j = 1 ; j <= 5 ; j++){
+            if (j - 1 >= 1){
+                dp[i+1][j-1] = cal(dp[i+1][j-1],dp[i][j]);
+            }
+            if (j + 1 <= 5){
+                dp[i+1][j+1] = cal(dp[i+1][j+1],dp[i][j]);
+            }
+        }
+    }
+    string ans = "";
+    for (int i = 1 ; i <= 5 ; i++){
+        ans = cal(ans,dp[n][i]);
+    }
+    cout << ans;
+}

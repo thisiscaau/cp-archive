@@ -1,0 +1,104 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll int
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 1e9 + 7, MAXN = 2e5 + 5;
+/* declaration */
+ll n,m,opt,mx = 0,idx = 0;
+char mat[405][405];
+bool vis[405][405];
+bool check[164026];
+ll id[405][405];
+ll sz[164026];
+ll dx[] = {-1,0,1,0};
+ll dy[] = {0,1,0,-1};
+/* workspace */
+ll dfs(ll i,ll j,char ch){
+    ll res = 1;
+    if (i < 1 || i > n || j < 1 || j > m){
+        return 0;
+    }
+    vis[i][j] = true; id[i][j] = idx;
+    for (int go = 0; go < 4 ; go++){
+        ll ni = i + dx[go], nj = j + dy[go];
+        if (!vis[ni][nj] && mat[ni][nj] == ch){
+            res += dfs(ni,nj,ch);
+        }
+    }
+    return res; 
+}
+bool in(ll i,ll j){
+    if (i < 1 || i > n || j < 1 || j > m){
+        return false;
+    }
+    return true;
+}
+signed main(){
+    freopen("FARM.inp","r",stdin);
+    freopen("FARM.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> opt >> n >> m;
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            cin >> mat[i][j];
+            vis[i][j] = false;
+        }
+    }
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            if (!vis[i][j]){
+                idx++; sz[idx] = dfs(i,j,mat[i][j]);
+                mx = max(sz[idx],mx);
+            }
+        }
+    }
+    if (opt == 1){
+        cout << mx << endl;
+        return 0;
+    }
+    ll mx_ = 0;
+    ll x,y,area; char p;
+    memset(check,false,sizeof(check));
+    for (int i = 1 ; i <= n ; i++){
+        for (int j = 1 ; j <= m ; j++){
+            char aux = mat[i][j]; // save for later
+            for (int go = 0 ; go < 4 ; go++){
+                ll ni = i + dx[go], nj = j + dy[go];
+                if (!in(ni,nj)) continue;
+                mat[i][j] = mat[ni][nj];
+                area = 0;
+                for (int go_ = 0 ; go_ < 4 ; go_++){
+                    ll ni_ = i + dx[go_], nj_ = j + dy[go_];
+                    if (!check[id[ni_][nj_]] && mat[i][j] == mat[ni_][nj_]){
+                        check[id[ni_][nj_]] = true;
+                        area += sz[id[ni_][nj_]];
+                    }
+                }
+                if (!check[id[i][j]]) area++;
+                if (area > mx_){
+                    mx_ = area; p = mat[i][j];
+                    x = i , y = j;
+                }
+                for (int go_ = 0 ; go_ < 4 ; go_++){
+                    ll ni_ = i + dx[go_],nj_ = j + dy[go_];
+                    check[id[ni_][nj_]] = false;
+                }
+            }
+            mat[i][j] = aux;
+        }
+    }
+    cout << x << " " << y << endl;
+    cout << p;
+}

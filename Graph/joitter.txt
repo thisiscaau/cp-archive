@@ -17,45 +17,60 @@ ll const inf = 1e9 + 7, MAXN = 1e5 + 5;
 /* declaration */
 ll n,m,res = 0;
 ll p[MAXN],sz[MAXN];
-set<ii> following[MAXN];
-set<ll> follower[MAXN]; 
+set<ii> edges[MAXN]; /* tập edge đi ra bên ngoài */
+set<ll> groups[MAXN]; /* group[i] tập các node nối đến nhóm i nhưng mới đc 1 chiều */
 /* workspace */
 ll find(ll u){
     return p[u] == u ? u : find(p[u]);
 }
 void follow(ll u,ll v){
     ll u_ = find(u), v_ = find(v);
-    if (u_ == v_) return;
-    auto it = following[v_].lower_bound({u_,0});
-    if (it != following[v_].end() && it->first == u_){
-        res += sz[u_]*sz[v_]*2;
-        if (follower[u_].size() + following[u_].size() > follower[v_].size() + following[v_].size()){
+    /* tìm nhóm người u,v */
+    if (u_ == v_) return; /* cùng nhóm => kết quả ko thay đổi */
+    auto it = edges[v_].lower_bound({u_,0}); /* pointer dùng để kiểm tra xem trong edge[v_] tồn tại
+    edge nối đến u_ không */
+    if (it != edges[v_].end() && it->first == u_){
+        res += sz[u_]*sz[v_]*2; /* nối tất cả các điểm trong 
+        tập u_ và v_ tính theo cả 2 chiều */
+        /* small to large */
+        if (groups[u_].size() + edges[u_].size() > groups[v_].size() + edges[v_].size()){
             swap(u_,v_);
         }
-        vii new_follow;
-        for (auto e : following[u_]){
-            follower[e.fi].erase(e.se);
-            res -= sz[e.fi];
-            if (e.fi != v_) new_follow.pb(e);
+        /* Quá trình tiếp theo chúng ta sẽ xóa các cạnh nối với
+        u_ để merge vào v_ */
+        vii new_edge; /* vector chứa cạnh tạm thời */
+        /* Ở đây 1 edge có dạng (u,v) - trong đó u là tập đích , còn v là node bắt đầu
+        for (auto e : edges[u_]){ 
+            /* các edge đi ra ngoài của u_ */
+            groups[e.fi].erase(e.se); /* xóa node */
+            res -= sz[e.fi];   /* tạm thời trừ đi */
+            /* node e.se trước đó khi nối với 1 node trong set e.fi -> nối với tất cả
+            các node trong set e.fi */
+            if (e.fi != v_) new_edge.pb(e); /* chỉ add lại những edge không bị
+            ảnh hưởng bởi quá trình merge */
         }
-        following[u_].clear();
-        res -= sz[u_]*follower[u_].size();
-        res += sz[u_]*follower[v_].size();
-        vector<ll> new_followed;
-        for (auto a : follower[u_]){
-            ll a_ = find(a);
-            following[a_].erase({u_,a});
-            if (a_ != v_) new_followed.pb(a);
+        edges[u_].clear();
+        res -= sz[u_]*groups[u_].size();
+        /* tạm thời xóa các cạnh đơn phương trong group[u] */ 
+        res += sz[u_]*groups[v_].size(); /* những node trong group[v] giờ cũng sẽ follow 
+        những node trong tập u trước đây theo định nghĩ social exchange */
+        vector<ll> new_groups; /* nhóm chờ mới */
+        for (auto a : groups[u_]){
+            ll a_ = find(a); /* tìm nhóm của a */
+            edges[a_].erase({u_,a}); /* tạm thời xóa đi edge */
+            if (a_ != v_) new_groups.pb(a); /* skip những node bị lặp/ ảnh hưởng bởi
+            quá trình merge */
         }
-        follower[u_].clear();
-        p[u_] = v_; sz[v_] += sz[u_];
-        for (auto e : new_follow) follow(e.se,e.fi);
-        for (auto a : new_followed) follow(a,v_);
+        groups[u_].clear();
+        p[u_] = v_; sz[v_] += sz[u_]; /* merge dsu cơ bản */
+        for (auto e : new_edge) follow(e.se,e.fi); /* nối lại các edge của u_ trước đây */
+        for (auto a : new_groups) follow(a,v_); /* nối lại */
     }
-    else if (!follower[v_].count(u)){
-        res += sz[v_];
-        following[u_].emplace(v_,u);
-        follower[v_].insert(u);
+    else if (!groups[v_].count(u)){
+        /* trường hợp không đó edge từ v_ -> node u */
+        res += sz[v_]; /* vì node u nối tất cả node trong v_ */
+        edges[u_].emplace(v_,u); /* thêm edge */
+        groups[v_].insert(u); /* thêm vào vector chờ */
     }
 }
 signed main(){
