@@ -197,3 +197,5 @@ Sẽ rất là có ích nếu bạn tham khảo thêm bài viết Second-best MS
 Các bạn có thể tham khảo code của mình tại đây : thisiscaau/china-paper-archive (bao gồm cả solution của bài
 Atcoder)
 
+Phụ lục : +-1 RMQ
+Ý tưởng là chúng ta chia 
