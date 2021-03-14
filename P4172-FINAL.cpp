@@ -98,6 +98,7 @@ signed main(){
             */
             // joining u and v together
             ll ff = fa[u], qq = u;
+            // delete edge
             while (g[qq][ff] != ans){
                 swap(fa[ff],qq);
                 swap(ff,qq);
@@ -108,5 +109,6 @@ signed main(){
     for (int i = cnt ; i >= 1 ; i--){
         cout << res[i] << endl;
     }
+    // time complexity : log n per query seek for more on cp-algo : dsu
     //debug("Total Time: %.3f\n", (double)(clock() - timer) / CLOCKS_PER_SEC);
 }
