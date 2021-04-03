@@ -1,0 +1,81 @@
+/*                 thisiscaau's  code              
+        What’s happened happened. Which is an expression of faith 
+    in the mechanics of the world. It’s not an excuse to do nothing.
+*/
+/* shortcuts */
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+/* constants */
+ll const inf = 2e9, MAXN = 2e5 + 5;
+/* declaration */
+ll n,k,opt;
+ll ori[55],ans[55];
+/* workspace */
+void solve1(){
+    ll a,b,c,mi = inf;
+    for (int i = 1 ; i <= n ; i++){
+        cin >> ori[i];
+        mi = min(mi,ori[i]);
+    }
+    a = b = mi;
+    cout << a << " " << b << " "; /* base */
+    for (int i = 3 ; i <= k ; i++){
+        c = a + b; cout << c << " ";
+        a = b; b = c; /* update */
+    }
+}
+void solve2(){
+    for (int i = 1 ; i <= n ; i++){
+        cin >> ori[i];
+        ans[i] = ori[i];
+    }
+    sort(ori+1,ori+n+1);
+    ll a = 0,b = 1,c,id = 1,idx = n;
+    if (a + b + ori[id] > ori[id+1]){
+        a = ori[id] ; b = ori[id+1];
+    }
+    else {
+        idx++; ans[idx] = 1;
+    }
+    while (idx < k && id <= n){
+        c = a + b;
+        if (c + b <= ori[id]){
+            idx++;
+            ans[idx] = c;
+            a = b; b = c;
+        }
+        else {
+            a = b; b = ori[id];
+            id++;
+        }
+    }
+    if (idx < k){
+        a = max(ori[n-1],ans[idx]);
+        b = ori[n];
+        while (idx < k){
+            c = a + b;
+            idx++;
+            ans[idx] = c;
+            a = b; b = c;
+        }
+    }
+    for (int i = 1 ; i <= k ; i++){
+        cout << ans[i] << " ";
+    }
+}
+signed main(){
+    freopen("TRIANGLE.inp","r",stdin);
+    freopen("TRIANGLE.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> opt >> n >> k;
+    if (opt == 1) solve1();
+    else solve2();
+}

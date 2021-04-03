@@ -8,3 +8,5 @@ notes on bugs for quicker debug stage
 5. Calculations
 6. Try to print out the algorithm's process
 7. get a sarco device
+8. Mind your declarations
+9. When using string.find or string.rfind the result MUST be long long

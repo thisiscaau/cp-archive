@@ -1,0 +1,36 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+ll const MAXN = 1e5 + 5;
+set<ll> st[MAXN];
+ll n,m;
+ll pos[MAXN],own[MAXN];
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    cin >> n >> m;
+    for (int i = 1 ; i <= n ; i++){
+        pos[i] = i;
+        own[i] = i;
+        st[i].insert(i);
+    }
+    for (int i = 1 ; i <= m ; i++){
+        ll a,b;
+        cin >> a >> b;
+        swap(pos[own[a]],pos[own[b]]);
+        swap(own[a],own[b]);
+    }
+    for (int i = 1 ; i <= n ; i++){
+        while (i != pos[i]){
+            st[i].insert(st[pos[i]].begin(),st[pos[i]].end());
+            pos[i] = pos[pos[i]];
+        }
+    }
+    for (int i = 1 ; i <= n ; i++){
+        cout << st[i].size() << endl;
+    }
+}
